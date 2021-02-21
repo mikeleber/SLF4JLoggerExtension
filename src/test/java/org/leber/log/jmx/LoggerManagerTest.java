@@ -11,7 +11,6 @@ class LoggerManagerTest {
 
     @Test
     public void checkImpl(){
-        new org.leber.log.LoggerFactory();
         Logger LOG =LoggerFactory.getLogger(LoggerManager.class);
         String loggerName = LOG.getClass().getName();
         Assertions.assertEquals("",loggerName);
