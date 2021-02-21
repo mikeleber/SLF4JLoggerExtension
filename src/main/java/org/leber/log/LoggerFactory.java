@@ -22,7 +22,7 @@ public class LoggerFactory implements ILoggerFactory {
      *
      * @return the instance
      */
-    public static ILoggerFactory getInstance() {
+    public static LoggerFactory getInstance() {
         return InstanceHolder.instance;
     }
 
