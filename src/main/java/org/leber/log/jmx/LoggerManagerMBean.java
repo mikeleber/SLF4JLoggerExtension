@@ -7,6 +7,22 @@ public interface LoggerManagerMBean {
 
     void setRootLogLevel(String level) throws IOException;
 
+    void setBufferFlushSignal(String filter) throws IOException;
+
+    void setBuffering(boolean buffer) throws IOException;
+
+    void setBufferGroupMarker(String marker) throws IOException;
+
+    void setBufferOutLevel(int level) throws IOException;
+
+    String getBufferFlushSignal() throws IOException;
+
+    boolean getBuffering() throws IOException;
+
+    String getBufferGroupMarker() throws IOException;
+
+    int getBufferOutLevel() throws IOException;
+
     /**
      * Returns the current Log-level mapping.
      *

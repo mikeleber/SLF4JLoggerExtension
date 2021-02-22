@@ -31,6 +31,46 @@ public class LoggerManager implements LoggerManagerMBean {
         Logger.setLogFilter(filter);
     }
 
+    @Override
+    public String getBufferFlushSignal() throws IOException {
+        return Logger.getBufferFlushSignalString();
+    }
+
+    @Override
+    public void setBufferFlushSignal(String filter) throws IOException {
+        Logger.setBufferFlushSignal(filter);
+    }
+
+    @Override
+    public boolean getBuffering() throws IOException {
+        return Logger.isBuffering();
+    }
+
+    @Override
+    public void setBuffering(boolean buffer) throws IOException {
+        Logger.setBuffering(buffer);
+    }
+
+    @Override
+    public String getBufferGroupMarker() throws IOException {
+        return Logger.getBufferGroupMarker();
+    }
+
+    @Override
+    public void setBufferGroupMarker(String marker) throws IOException {
+        Logger.setBufferGroupMarker(marker);
+    }
+
+    @Override
+    public int getBufferOutLevel() throws IOException {
+        return Logger.getBufferOutLevel();
+    }
+
+    @Override
+    public void setBufferOutLevel(int level) throws IOException {
+        Logger.setBufferOutLevel(level);
+    }
+
     /**
      * Returns the current Log-level mapping.
      *

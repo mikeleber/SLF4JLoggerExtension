@@ -348,7 +348,7 @@ public class Logger implements org.slf4j.Logger {
         return bufferFlushSignalString;
     }
 
-    public static void setBufferFlushSignalString(String signal) {
+    public static void setBufferFlushSignal(String signal) {
         bufferFlushSignalString=signal;
         if (signal != null) {
             Logger.bufferFlushSignal = Pattern.compile(bufferFlushSignalString);
@@ -518,6 +518,9 @@ public class Logger implements org.slf4j.Logger {
 
     public static void performTriggeredLog() {
         getCircularList().drainOut(a -> performTriggeredLog(a));
+    }
+
+    public static boolean isBuffering() {return useBuffering;
     }
 
     public void logAction(ACTION action) {
