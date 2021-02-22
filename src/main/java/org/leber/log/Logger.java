@@ -61,7 +61,8 @@ public class Logger implements org.slf4j.Logger {
     private boolean warnEnabled = true;
     private boolean auditEnabled = true;
     private static boolean useBuffering = false;
-
+    public static String bufferGroupMarker;
+    public static int bufferOutLevel = I_LEVEL_PERFORMANCE;
     public Logger(org.slf4j.Logger logger) {
         delegate = logger;
     }
@@ -125,7 +126,21 @@ public class Logger implements org.slf4j.Logger {
     public static void setGlobalAuditEnabled(boolean enabled) {
         globalAuditEnabled = enabled;
     }
+    public static int getBufferOutLevel() {
+        return bufferOutLevel;
+    }
 
+    public static void setBufferOutLevel(int level) {
+        bufferOutLevel = level;
+    }
+
+    public static String getBufferGroupMarker() {
+        return bufferGroupMarker;
+    }
+
+    public static void setBufferGroupMarker(String marker) {
+        bufferGroupMarker = marker;
+    }
     public static String getGlobalLevels() {
         List<String> levels = new ArrayList<>();
         if (isGlobalInfoEnabled()) {
@@ -475,6 +490,10 @@ public class Logger implements org.slf4j.Logger {
         int m = (int) entry[MTHD_IDX];
         int level = I_LEVEL_ERROR;//(int) entry[LVL_IDX];
         int realLevel = (int) entry[LVL_IDX];
+        if (realLevel>getBufferOutLevel()){
+            return;
+        }
+
         Map<String, String> mdcCopy = (Map) entry[MDC_IDX];
         MDC.setContextMap(mdcCopy);
         String realLevelTxt=evaluateLevelFor(realLevel);
