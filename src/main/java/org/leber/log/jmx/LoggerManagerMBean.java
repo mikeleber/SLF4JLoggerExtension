@@ -11,6 +11,10 @@ public interface LoggerManagerMBean {
 
     void setBuffering(boolean buffer) throws IOException;
 
+    void setBufferCapacity(int bufferCapacity);
+
+    int getBufferCapacity();
+
     void setBufferGroupMarker(String marker) throws IOException;
 
     void setBufferOutLevel(int level) throws IOException;

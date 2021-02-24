@@ -30,7 +30,7 @@ public class Logger implements org.slf4j.Logger {
     public static final int I_LEVEL_TRACE = 6;
     public static final int I_LEVEL_PERFORMANCE = 7;
     public static final int I_LEVEL_ERROR = 1;
-    public static final int BUFFER_CAPACITY = 200;
+    public static  int BUFFER_CAPACITY = 200;
     public static final int MTHD_IDX = 0;
     public static final int THIS_IDX = 1;
     public static final int LVL_IDX = 2;
@@ -384,6 +384,15 @@ public class Logger implements org.slf4j.Logger {
         return bufferedLogs;
     }
 
+    public static void setBufferCapacity(int bufferCapacity) {
+        BUFFER_CAPACITY = bufferCapacity;
+        bufferedLogs=null;
+    }
+
+    public static int getBufferCapacity() {
+        return BUFFER_CAPACITY;
+    }
+
     private static Object[] getBufferEntry() {
         Object[] buffer;
         if (getCircularList().size() == 0) {
@@ -396,96 +405,7 @@ public class Logger implements org.slf4j.Logger {
 
         return buffer;
     }
-
-    public static void
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    performTriggeredLog(Object[] entry) {
+public static void performTriggeredLog(Object[] entry) {
        // System.out.println(Arrays.toString(entry));
         int m = (int) entry[MTHD_IDX];
         int level = I_LEVEL_ERROR;//(int) entry[LVL_IDX];
@@ -1257,7 +1177,9 @@ public class Logger implements org.slf4j.Logger {
     public void performance(String format, Object... arguments) {
         dispatchLog2(I_LEVEL_PERFORMANCE, format, useBuffering, arguments);
     }
-
+    public void performance(String message) {
+        dispatchLog1(I_LEVEL_PERFORMANCE, message, useBuffering);
+    }
     /**
      * Log a message at the AUDIT level according to the specified format
      * and arguments.

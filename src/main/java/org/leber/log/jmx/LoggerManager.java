@@ -55,7 +55,14 @@ public class LoggerManager implements LoggerManagerMBean {
     public String getBufferGroupMarker() throws IOException {
         return Logger.getBufferGroupMarker();
     }
-
+    @Override
+    public  void setBufferCapacity(int bufferCapacity) {
+       Logger.setBufferCapacity(bufferCapacity);
+    }
+    @Override
+    public  int getBufferCapacity() {
+        return Logger.getBufferCapacity();
+    }
     @Override
     public void setBufferGroupMarker(String marker) throws IOException {
         Logger.setBufferGroupMarker(marker);
