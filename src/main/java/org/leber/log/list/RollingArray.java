@@ -137,7 +137,7 @@ public class RollingArray<T> {
         int pos = _startPos;
         int size = _actSize;
         T[] array = Arrays.copyOf(_array, size);
-        makeEmpty();
+
         for (int i = 0; i < size; i++) {
             consumer.accept(array[pos]);
             pos = increment(pos);

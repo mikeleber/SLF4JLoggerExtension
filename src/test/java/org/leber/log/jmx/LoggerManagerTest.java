@@ -13,7 +13,7 @@ private static final Logger LOGGER = Logger.getLogger(LoggerManagerTest.class);
 @BeforeAll
     public static  void init(){
     Logger.setBuffering(true);
-    Logger.setBufferFlushSignal("trace200");
+    Logger.setBufferFlushSignal("trace5");
     Logger.setBufferOutLevel(Logger.I_LEVEL_INFO);
 }
     @Test
@@ -31,7 +31,7 @@ private static final Logger LOGGER = Logger.getLogger(LoggerManagerTest.class);
                 LOGGER.trace("trace"+i);
                 LOGGER.performance("performance"+i);
 
-                Thread.sleep(1000);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
