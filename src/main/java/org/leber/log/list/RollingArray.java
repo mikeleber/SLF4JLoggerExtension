@@ -106,7 +106,6 @@ public class RollingArray<T> {
             _actSize++;
         }
         _actPos = increment(_actPos);
-        System.out.println(_actPos);
     }
 
     public  void push(T[] vals) {
@@ -175,16 +174,17 @@ public class RollingArray<T> {
         return target;
     }
     public  void traverse(Consumer<T> consumer,T[] array) {
+        System.out.println("*********************HandleFlush***************");
         for (int i = 0; i < array.length; i++) {
             consumer.accept(array[i]);
         }
+        System.out.println("-----------------------------------------------");
     }
     public  void drainOut(Consumer<T> consumer) {
        traverse(consumer);
         makeEmpty();
     }
     public  void traverseAsync(final Consumer<T> consumer,T[]array) {
-
         new Thread( () -> traverse(consumer,array)).start();
     }
 }

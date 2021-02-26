@@ -285,8 +285,7 @@ public class Logger implements org.slf4j.Logger {
                 format = MessageFormatter.arrayFormat(format, args).getMessage();
             }
             if (bufferFlushSignal.matcher(format).find()) {
-                System.out.println("*********************HandleFlush***************");
-                bufferedLogs.traverseAsync(e -> performTriggeredLog(e),bufferedLogs.toArray());
+                bufferedLogs.traverse(e -> performTriggeredLog(e),bufferedLogs.toArray());
                 bufferedLogs.makeEmpty();
             }
         }

@@ -24,23 +24,23 @@ private static final Logger LOGGER = Logger.getLogger(LoggerManagerTest.class);
     }
 
     private void createLogs(int ti) {
-        for (int i=0;i<1000;i++){
-        try {
-//            LOGGER.audit(ti+" audit"+ i);
-//            LOGGER.error(ti+" error"+ i);
-//            LOGGER.info(ti+" info"+ i);
-//            LOGGER.warn(ti+" warn"+ i);
-//            LOGGER.debug(ti+" debug"+ i);
-//            LOGGER.trace(ti+" trace"+ i);
-//            LOGGER.performance(ti+" performance"+ i);
+        for (int i=0;i<10000;i++){
+//        try {
+           LOGGER.audit(ti+" audit"+ i);
+           LOGGER.error(ti+" error"+ i);
+            LOGGER.info(ti+" info"+ i);
+            LOGGER.warn(ti+" warn"+ i);
+            LOGGER.debug(ti+" debug"+ i);
+            LOGGER.trace(ti+" trace"+ i);
+            LOGGER.performance(ti+" performance"+ i);
 
             LOGGER.error(ti+" "+ i);
 
 
-            Thread.currentThread().sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//            Thread.currentThread().sleep(10);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         }
     }
 }
