@@ -399,7 +399,7 @@ public class Logger implements org.slf4j.Logger {
             buffer = new Object[7];
             getCircularList().push(buffer);
         } else {
-            getCircularList().moveVorward();
+            getCircularList().moveForward();
             buffer = getCircularList().peek();
         }
 

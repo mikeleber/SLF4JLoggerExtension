@@ -1,24 +1,53 @@
 package org.leber.log.list;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class RollingArrayTest {
 
     @Test
-    public void testRolling(){
+    public void testFirst(){
+        RollingArray<String>roller = new RollingArray<String>(String.class,20);
+        for (int i = 1; i<22;i++){
+            roller.push(""+i);
+            if (i==1){
+                Assertions.assertEquals("1",roller.first());
+            }
+            if (i==2){
+                Assertions.assertEquals("1",roller.first());
+            }
+            if (i==20){
+                Assertions.assertEquals("1",roller.first());
+            }
+        }
+        Assertions.assertEquals("2",roller.first());
+
+    }
+    @Test
+    public void testPush(){
         RollingArray<String>roller = new RollingArray<String>(String.class,20);
         for (int i = 1; i<22;i++){
             roller.push(""+i);
         }
 
+        Assertions.assertEquals("2",roller.first());
 
     }
     @Test
-    public void testRollingWithLateSetVAlue(){
+    public void testToArray(){
+        RollingArray<String>roller = new RollingArray<String>(String.class,20);
+        for (int i = 1; i<22;i++){
+            roller.push(""+i);
+        }
+        String[] toArray= roller.toArray();
+
+        Assertions.assertEquals("2",roller.first());
+
+    }
+    @Test
+    public void testRollingWithLateSetValue(){
         RollingArray<Object[]>roller = new RollingArray<Object[]>(Object[].class,20);
         for (int i = 0; i < roller.getArray().length; i++) {
             roller.getArray()[i] = new Object[1];
@@ -43,7 +72,7 @@ class RollingArrayTest {
             buffer = new Object[7];
             roller.push(buffer);
         } else {
-            roller.moveVorward();
+            roller.moveForward();
             buffer = roller.peek();
         }
 
