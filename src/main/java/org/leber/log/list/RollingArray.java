@@ -22,12 +22,12 @@ public class RollingArray<T> {
         makeEmpty();
     }
 
-    public synchronized void clear() {
+    public  void clear() {
         _array = (T[]) Array.newInstance(_entryClazz, _array.length);
         makeEmpty();
     }
 
-    public synchronized void reinitialize(int size) {
+    public  void reinitialize(int size) {
         _array = (T[]) Array.newInstance(_entryClazz, size);
         makeEmpty();
     }
@@ -36,13 +36,13 @@ public class RollingArray<T> {
         return _actSize == 0;
     }
 
-    private synchronized void makeEmpty() {
+    public  void makeEmpty() {
         _actSize = 0;
         _startPos = 0;
         _actPos = -1;
     }
 
-    public synchronized T pop() {
+    public  T pop() {
         if (isEmpty()) {
             throw new UnderflowException("RollingStack pop");
         }
@@ -85,7 +85,7 @@ public class RollingArray<T> {
         return _array[_actPos];
     }
 
-    public synchronized T first() {
+    public  T first() {
         if (isEmpty()) {
             throw new UnderflowException("RollingStack:first");
         }
@@ -96,19 +96,20 @@ public class RollingArray<T> {
         return _actSize;
     }
 
-    public synchronized void push(T obj) {
+    public  void push(T obj) {
         moveVorward();
         _array[_actPos] = obj;
     }
 
-    public synchronized void moveVorward() {
+    public  void moveVorward() {
         if (_actSize < _array.length) {
             _actSize++;
         }
         _actPos = increment(_actPos);
+        System.out.println(_actPos);
     }
 
-    public synchronized void push(T[] vals) {
+    public  void push(T[] vals) {
         for (int v = 0; v < vals.length; v++) {
             push(vals[v]);
         }
@@ -133,21 +134,57 @@ public class RollingArray<T> {
         return _array;
     }
 
-    public synchronized void traverse(Consumer<T> consumer) {
-        int pos = _startPos;
-        int size = _actSize;
-        T[] array = Arrays.copyOf(_array, size);
+    public int getActPos() {
+        return _actPos;
+    }
 
-        for (int i = 0; i < size; i++) {
-            consumer.accept(array[pos]);
-            pos = increment(pos);
+    public  void traverse(Consumer<T> consumer) {
+        traverse(consumer,  toArray());
+//        int actPos = getActPos();
+//        int size = size();
+//        int startPos =actPos-(size-1);
+//
+//        if (startPos<0){
+//            int startPos2=_array.length+startPos;
+//            T[]  array2 = Arrays.copyOfRange(getArray(), startPos2,getArray().length);
+//            traverse(consumer,array2);
+//            T[]  array = Arrays.copyOfRange(getArray(),0,actPos);
+//            traverse(consumer,array);
+//        }else{
+//            T[] array = Arrays.copyOfRange(_array,startPos, actPos);
+//            traverse(consumer,array);
+//        }
+    }
+    public   T[]   toArray() {
+
+        int actPos = getActPos();
+        int size = size();
+        int startPos =actPos-(size-1);
+
+        T[] target =    (T[]) Array.newInstance(_entryClazz, size);
+        if (startPos<0){
+            int startPos2=_array.length+startPos;
+            int lengthOf2=getArray().length-startPos2;
+            System.arraycopy(_array,startPos2,target,0,lengthOf2);
+            int lengthOf1=size-lengthOf2;
+            System.arraycopy(_array,0,target,lengthOf2,lengthOf1);
+
+        }else{
+            target = Arrays.copyOfRange(_array,startPos, actPos);
+        }
+        return target;
+    }
+    public  void traverse(Consumer<T> consumer,T[] array) {
+        for (int i = 0; i < array.length; i++) {
+            consumer.accept(array[i]);
         }
     }
-    public synchronized void drainOut(Consumer<T> consumer) {
+    public  void drainOut(Consumer<T> consumer) {
        traverse(consumer);
         makeEmpty();
     }
-    public  void drainOutAsync(final Consumer<T> consumer) {
-        new Thread( () -> drainOut(consumer)).start();
+    public  void traverseAsync(final Consumer<T> consumer,T[]array) {
+
+        new Thread( () -> traverse(consumer,array)).start();
     }
 }

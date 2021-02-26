@@ -30,7 +30,7 @@ public class Logger implements org.slf4j.Logger {
     public static final int I_LEVEL_TRACE = 6;
     public static final int I_LEVEL_PERFORMANCE = 7;
     public static final int I_LEVEL_ERROR = 1;
-    public static  int BUFFER_CAPACITY = 200;
+    public static  int BUFFER_CAPACITY = 20;
     public static final int MTHD_IDX = 0;
     public static final int THIS_IDX = 1;
     public static final int LVL_IDX = 2;
@@ -286,7 +286,8 @@ public class Logger implements org.slf4j.Logger {
             }
             if (bufferFlushSignal.matcher(format).find()) {
                 System.out.println("*********************HandleFlush***************");
-                bufferedLogs.drainOutAsync(e -> performTriggeredLog(e));
+                bufferedLogs.traverseAsync(e -> performTriggeredLog(e),bufferedLogs.toArray());
+                bufferedLogs.makeEmpty();
             }
         }
     }
@@ -437,7 +438,7 @@ public static void performTriggeredLog(Object[] entry) {
     }
 
     public static void performTriggeredLog() {
-        getCircularList().drainOut(a -> performTriggeredLog(a));
+        synchronized (getCircularList()){getCircularList().drainOut(a -> performTriggeredLog(a));}
     }
 
     public static boolean isBuffering() {return useBuffering;
@@ -521,16 +522,22 @@ public static void performTriggeredLog(Object[] entry) {
     public void trace(Marker marker, String format, Object arg1, Object arg2) {
         delegate.trace(marker, format, arg1, arg2);
     }
+    private void updateBuffer(int mthdIdx,Object logger,Map mdc, int level,  String msgOrFormat,Object... arg5) {
+        synchronized (getCircularList()){
+        Object[] current = getBufferEntry();
+        current[MTHD_IDX] = Integer.valueOf(mthdIdx);
+        current[THIS_IDX] = logger;
+        current[MDC_IDX] = mdc;
+        current[LVL_IDX] = Integer.valueOf(level);
+        current[4] = msgOrFormat;
+        current[5] = arg5;
 
+        handleFlushSignal(msgOrFormat,arg5);}
+    }
     private void dispatchLog1(int level, String msg, boolean useBuffer) {
         if (useBuffer) {
-            Object[] current = getBufferEntry();
-            current[MTHD_IDX] = Integer.valueOf(THIS_IDX);
-            current[THIS_IDX] = this;
-            current[MDC_IDX] = MDC.getCopyOfContextMap();
-            current[LVL_IDX] = Integer.valueOf(level);
-            current[MSG_IDX] = msg;
-            handleFlushSignal(msg);
+            updateBuffer(1,this,MDC.getCopyOfContextMap(),level,msg,null);
+
         }
 
         switch (evaluateTargetLevel(level)) {
@@ -571,14 +578,8 @@ public static void performTriggeredLog(Object[] entry) {
 
     private void dispatchLog3(int level, String msg, Object arg, boolean useBuffer) {
         if (useBuffer) {
-            Object[] current = getBufferEntry();
-            current[MTHD_IDX] = Integer.valueOf(3);
-            current[THIS_IDX] = this;
-            current[LVL_IDX] = Integer.valueOf(level);
-            current[MDC_IDX] = MDC.getCopyOfContextMap();
-            current[MSG_IDX] = msg;
-            current[ARG_IDX] = arg;
-            handleFlushSignal(msg, arg);
+            updateBuffer(3,this,MDC.getCopyOfContextMap(),level,msg,arg);
+
         }
 
         switch (evaluateTargetLevel(level)) {
@@ -685,15 +686,8 @@ public static void performTriggeredLog(Object[] entry) {
 
     private void dispatchLog4(int level, String msg, Object arg1, Object arg2, boolean useBuffer) {
         if (useBuffer) {
-            Object[] current = getBufferEntry();
-            current[MTHD_IDX] = Integer.valueOf(4);
-            current[THIS_IDX] = this;
-            current[LVL_IDX] = Integer.valueOf(level);
-            current[MDC_IDX] = MDC.getCopyOfContextMap();
-            current[MSG_IDX] = msg;
-            current[4] = arg1;
-            current[5] = arg2;
-            handleFlushSignal(msg, arg1, arg2);
+            updateBuffer(4,this,MDC.getCopyOfContextMap(),level,msg,arg1,arg2);
+
         }
 
         switch (evaluateTargetLevel(level)) {
@@ -734,14 +728,8 @@ public static void performTriggeredLog(Object[] entry) {
 
     private void dispatchLog5(int level, String msg, Throwable t, boolean useBuffer) {
         if (useBuffer) {
-            Object[] current = getBufferEntry();
-            current[MTHD_IDX] = Integer.valueOf(5);
-            current[THIS_IDX] = this;
-            current[LVL_IDX] = Integer.valueOf(level);
-            current[MDC_IDX] = MDC.getCopyOfContextMap();
-            current[MSG_IDX] = msg;
-            current[THRD_IDX] = t;
-            handleFlushSignal(msg);
+            updateBuffer(5,this,MDC.getCopyOfContextMap(),level,msg,t);
+
         }
         switch (evaluateTargetLevel(level)) {
             case I_LEVEL_AUDIT:
@@ -781,14 +769,8 @@ public static void performTriggeredLog(Object[] entry) {
 
     private void dispatchLog2(int level, String format, boolean useBuffer, Object... arguments) {
         if (useBuffer) {
-            Object[] current = getBufferEntry();
-            current[MTHD_IDX] = Integer.valueOf(2);
-            current[THIS_IDX] = this;
-            current[LVL_IDX] = Integer.valueOf(level);
-            current[MDC_IDX] = MDC.getCopyOfContextMap();
-            current[FRMT_IDX] = format;
-            current[ARG_IDX] = arguments;
-            handleFlushSignal(format, arguments);
+            updateBuffer(1,this,MDC.getCopyOfContextMap(),level,format,arguments);
+
         }
         switch (evaluateTargetLevel(level)) {
             case I_LEVEL_AUDIT:
@@ -1129,7 +1111,7 @@ public static void performTriggeredLog(Object[] entry) {
      * @param msg the format string
      */
     public void audit(String msg) {
-        audit(msg, null, null);
+        dispatchLog1(I_LEVEL_AUDIT, msg, useBuffering);
     }
 
     /**
@@ -1143,7 +1125,7 @@ public static void performTriggeredLog(Object[] entry) {
      * @param arg    the first argument
      */
     public void audit(String format, Object arg) {
-        audit(format, arg, null);
+        dispatchLog2(I_LEVEL_AUDIT,format,  useBuffering,arg);
     }
 
     /**
