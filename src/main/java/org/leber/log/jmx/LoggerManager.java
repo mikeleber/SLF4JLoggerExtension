@@ -55,17 +55,20 @@ public class LoggerManager implements LoggerManagerMBean {
     public String getMdcEntryBufferFilter() throws IOException {
         return Logger.getMdcEntryBufferFilter();
     }
-    @Override
-    public  void setBufferCapacity(int bufferCapacity) {
-       Logger.setBufferCapacity(bufferCapacity);
-    }
-    @Override
-    public  int getBufferCapacity() {
-        return Logger.getBufferCapacity();
-    }
+
     @Override
     public void setMdcEntryBufferFilter(String marker) throws IOException {
         Logger.setMdcEntryBufferFilter(marker);
+    }
+
+    @Override
+    public int getBufferCapacity() {
+        return Logger.getBufferCapacity();
+    }
+
+    @Override
+    public void setBufferCapacity(int bufferCapacity) {
+        Logger.setBufferCapacity(bufferCapacity);
     }
 
     @Override

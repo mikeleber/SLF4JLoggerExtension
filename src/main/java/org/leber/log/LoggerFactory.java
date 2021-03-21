@@ -15,8 +15,6 @@ public class LoggerFactory implements ILoggerFactory {
     private LoggerFactory() {
         loggerMap = new ConcurrentHashMap<>();
         initialize();
-
-
     }
 
     /**

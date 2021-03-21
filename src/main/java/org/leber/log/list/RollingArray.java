@@ -6,10 +6,10 @@ import java.util.function.Consumer;
 
 public class RollingArray<T> {
     private static final int DEFAULT_CAPACITY = 10;
+    private final Class<T> _entryClazz;
     private T[] _array;
     private int _actSize;
     private int _actPos;
-    private final Class<T> _entryClazz;
     private int _startPos;
 
     public RollingArray(Class<T> clazz) {
@@ -20,6 +20,12 @@ public class RollingArray<T> {
         _entryClazz = clazz;
         _array = (T[]) Array.newInstance(_entryClazz, capacity);
         makeEmpty();
+    }
+
+    public static <T> void traverse(Consumer<T> consumer, T[] array) {
+        for (int i = 0; i < array.length; i++) {
+            consumer.accept(array[i]);
+        }
     }
 
     public void clear() {
@@ -159,16 +165,8 @@ public class RollingArray<T> {
         return target;
     }
 
-    public static <T>void traverse(Consumer<T> consumer, T[] array) {
-        for (int i = 0; i < array.length; i++) {
-            consumer.accept(array[i]);
-        }
-    }
-
     public void drainOut(Consumer<T> consumer) {
         traverse(consumer);
         makeEmpty();
     }
-
-
 }
