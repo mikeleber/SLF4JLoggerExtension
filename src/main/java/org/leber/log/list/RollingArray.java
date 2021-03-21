@@ -159,7 +159,7 @@ public class RollingArray<T> {
         return target;
     }
 
-    public void traverse(Consumer<T> consumer, T[] array) {
+    public static <T>void traverse(Consumer<T> consumer, T[] array) {
         for (int i = 0; i < array.length; i++) {
             consumer.accept(array[i]);
         }
@@ -170,7 +170,5 @@ public class RollingArray<T> {
         makeEmpty();
     }
 
-    public void traverseAsync(final Consumer<T> consumer, T[] array) {
-        new Thread(() -> traverse(consumer, array)).start();
-    }
+
 }

@@ -15,7 +15,7 @@ public interface LoggerManagerMBean {
 
     int getBufferCapacity();
 
-    void setBufferGroupMarker(String marker) throws IOException;
+    void setMdcEntryBufferFilter(String marker) throws IOException;
 
     void setBufferOutLevel(int level) throws IOException;
 
@@ -23,7 +23,7 @@ public interface LoggerManagerMBean {
 
     boolean getBuffering() throws IOException;
 
-    String getBufferGroupMarker() throws IOException;
+    String getMdcEntryBufferFilter() throws IOException;
 
     int getBufferOutLevel() throws IOException;
 

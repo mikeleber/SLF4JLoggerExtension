@@ -3,6 +3,10 @@ package org.leber.log.jmx;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.leber.log.Logger;
+import org.slf4j.MDC;
+
+import java.util.HashMap;
+import java.util.Map;
 
 class LoggerManagerTest {
 private static final Logger LOGGER = Logger.getLogger(LoggerManagerTest.class);
@@ -10,6 +14,7 @@ private static final Logger LOGGER = Logger.getLogger(LoggerManagerTest.class);
     public static  void init(){
     Logger.setBuffering(true);
     Logger.setBufferFlushSignal("3 5");
+    Logger.setMdcEntryBufferFilter("cid");
     Logger.setBufferOutLevel(Logger.I_LEVEL_INFO);
 }
     @Test
@@ -18,12 +23,15 @@ private static final Logger LOGGER = Logger.getLogger(LoggerManagerTest.class);
     //    Assertions.assertEquals("",loggerName);
         Runnable target;
       new Thread(()->createLogs(1)).start();
-      new Thread(()->createLogs(2)).start();
-        createLogs(3);
+      new Thread(()->createLogs(3)).start();
+        createLogs(2);
 
     }
 
     private void createLogs(int ti) {
+    Map mdc = new HashMap();
+    mdc.put("cid",String.valueOf(ti));
+        MDC.setContextMap(mdc);
         for (int i=0;i<10000;i++){
 //        try {
            LOGGER.audit(ti+" audit"+ i);

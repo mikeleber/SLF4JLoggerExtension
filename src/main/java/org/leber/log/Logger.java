@@ -7,10 +7,7 @@ import org.slf4j.MDC;
 import org.slf4j.Marker;
 import org.slf4j.helpers.MessageFormatter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class Logger implements org.slf4j.Logger {
@@ -61,7 +58,7 @@ public class Logger implements org.slf4j.Logger {
     private boolean warnEnabled = true;
     private boolean auditEnabled = true;
     private static boolean useBuffering = false;
-    public static String bufferGroupMarker;
+    public static String mdcEntryBufferFilter;
     public static int bufferOutLevel = I_LEVEL_PERFORMANCE;
     public Logger(org.slf4j.Logger logger) {
         delegate = logger;
@@ -134,12 +131,12 @@ public class Logger implements org.slf4j.Logger {
         bufferOutLevel = level;
     }
 
-    public static String getBufferGroupMarker() {
-        return bufferGroupMarker;
+    public static String getMdcEntryBufferFilter() {
+        return mdcEntryBufferFilter;
     }
 
-    public static void setBufferGroupMarker(String marker) {
-        bufferGroupMarker = marker;
+    public static void setMdcEntryBufferFilter(String entryID) {
+        mdcEntryBufferFilter = entryID;
     }
     public static String getGlobalLevels() {
         List<String> levels = new ArrayList<>();
@@ -279,13 +276,14 @@ public class Logger implements org.slf4j.Logger {
         }
     }
 
-    public static void handleFlushSignal(String format, Object... args) {
+    public static void handleFlushSignal(Map currentMDC, String format, Object... args) {
         if (format != null && bufferFlushSignal != null) {
             if (args != null && args.length > 0) {
                 format = MessageFormatter.arrayFormat(format, args).getMessage();
             }
             if (bufferFlushSignal.matcher(format).find()) {
-                bufferedLogs.traverse(e -> performTriggeredLog(e),bufferedLogs.toArray());
+                RollingArray.traverse(e -> performTriggeredLog(currentMDC,e),bufferedLogs.toArray());
+                MDC.setContextMap(currentMDC);
                 bufferedLogs.makeEmpty();
             }
         }
@@ -405,7 +403,7 @@ public class Logger implements org.slf4j.Logger {
 
         return buffer;
     }
-public static void performTriggeredLog(Object[] entry) {
+public static void performTriggeredLog(Map srcMDC,Object[] entry) {
        // System.out.println(Arrays.toString(entry));
         int m = (int) entry[MTHD_IDX];
         int level = I_LEVEL_ERROR;//(int) entry[LVL_IDX];
@@ -415,6 +413,11 @@ public static void performTriggeredLog(Object[] entry) {
         }
 
         Map<String, String> mdcCopy = (Map) entry[MDC_IDX];
+
+       if(!matchGroupMarker(getMdcEntryBufferFilter(),srcMDC,mdcCopy)){
+           return;
+       }
+
         MDC.setContextMap(mdcCopy);
         String realLevelTxt=evaluateLevelFor(realLevel);
         switch (m) {
@@ -436,12 +439,24 @@ public static void performTriggeredLog(Object[] entry) {
         }
     }
 
-    public static void performTriggeredLog() {
-        synchronized (getCircularList()){getCircularList().drainOut(a -> performTriggeredLog(a));}
+    private static boolean matchGroupMarker(String bufferGroupMarker, Map srcMDC, Map<String, String> mdcCopy) {
+
+        if (getMdcEntryBufferFilter()!=null){
+           return Objects.equals(srcMDC.get(bufferGroupMarker),mdcCopy.get(bufferGroupMarker));
+        }else{
+            return true;
+        }
     }
 
-    public static boolean isBuffering() {return useBuffering;
+    public static void performTriggeredLog() {
+        synchronized (getCircularList()){
+            Map mdcMap=MDC.getCopyOfContextMap();
+            getCircularList().drainOut(a -> performTriggeredLog(mdcMap,a));
+            MDC.setContextMap(mdcMap);
+        }
     }
+
+    public static boolean isBuffering() {return useBuffering;}
 
     public void logAction(ACTION action) {
         dispatchLog3(I_LEVEL_INFO, "{}", action.getAction(), useBuffering);
@@ -531,7 +546,7 @@ public static void performTriggeredLog(Object[] entry) {
         current[4] = msgOrFormat;
         current[5] = arg5;
 
-        handleFlushSignal(msgOrFormat,arg5);}
+        handleFlushSignal(mdc,msgOrFormat,arg5);}
     }
     private void dispatchLog1(int level, String msg, boolean useBuffer) {
         if (useBuffer) {
