@@ -23,9 +23,9 @@ public interface LoggerManagerMBean {
 
     void setMdcEntryBufferFilter(String marker) throws IOException;
 
-    int getBufferOutLevel() throws IOException;
+    int getMaxBufferOutLevel() throws IOException;
 
-    void setBufferOutLevel(int level) throws IOException;
+    void setMaxBufferOutLevel(int level) throws IOException;
 
     /**
      * Returns the current Log-level mapping.

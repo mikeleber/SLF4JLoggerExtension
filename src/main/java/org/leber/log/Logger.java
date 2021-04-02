@@ -1,6 +1,7 @@
 package org.leber.log;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.leber.log.list.RollingArray;
 import org.slf4j.MDC;
 import org.slf4j.Marker;
@@ -21,6 +22,7 @@ public class Logger implements org.slf4j.Logger {
     public static final int I_LEVEL_NONE = 0;
     public static final int I_LEVEL_AUDIT = 2;
     public static final int I_LEVEL_INFO = 3;
+    public static final int TRIGGERD_OUT_LOG_LEVEL = I_LEVEL_INFO;
     public static final int I_LEVEL_WARN = 4;
     public static final int I_LEVEL_DEBUG = 5;
     public static final int I_LEVEL_TRACE = 6;
@@ -40,7 +42,7 @@ public class Logger implements org.slf4j.Logger {
     public static Pattern bufferFlushSignal;
     public static String bufferFlushSignalString;
     public static String mdcEntryBufferFilter;
-    public static int bufferOutLevel = I_LEVEL_PERFORMANCE;
+    public static int maxBufferOutLevel = I_LEVEL_PERFORMANCE;
     private static int[] logLevelMapping = createIntSequence(0, 8, THIS_IDX);
     private static boolean globalInfoEnabled = true;
     private static boolean globalErrorEnabled = true;
@@ -124,12 +126,12 @@ public class Logger implements org.slf4j.Logger {
         globalAuditEnabled = enabled;
     }
 
-    public static int getBufferOutLevel() {
-        return bufferOutLevel;
+    public static int getMaxBufferOutLevel() {
+        return maxBufferOutLevel;
     }
 
-    public static void setBufferOutLevel(int level) {
-        bufferOutLevel = level;
+    public static void setMaxBufferOutLevel(int level) {
+        maxBufferOutLevel = level;
     }
 
     public static String getMdcEntryBufferFilter() {
@@ -278,15 +280,18 @@ public class Logger implements org.slf4j.Logger {
         }
     }
 
-    public static void handleFlushSignal(Map currentMDC, String format, Object... args) {
+    public  void handleFlushSignal(Map currentMDC, String format, Object... args) {
         if (format != null && bufferFlushSignal != null) {
             if (args != null && args.length > 0) {
                 format = MessageFormatter.arrayFormat(format, args).getMessage();
             }
             if (bufferFlushSignal.matcher(format).find()) {
+                dispatchLog1(TRIGGERD_OUT_LOG_LEVEL,"Perform triggeredLog",false);
                 RollingArray.traverse(e -> performTriggeredLog(currentMDC, e), bufferedLogs.toArray());
+                //Reapply mdc to current thread
                 MDC.setContextMap(currentMDC);
                 bufferedLogs.makeEmpty();
+                dispatchLog1(TRIGGERD_OUT_LOG_LEVEL,"Perform triggeredLog end",false);
             }
         }
     }
@@ -362,7 +367,7 @@ public class Logger implements org.slf4j.Logger {
     }
 
     public static void setLogFilter(String logFilter) {
-        if (logFilter != null) {
+        if (Strings.isNotEmpty(logFilter)) {
             Logger.logFilterString = logFilter;
             Logger.logFilter = Pattern.compile(logFilter);
         } else {
@@ -409,11 +414,8 @@ public class Logger implements org.slf4j.Logger {
     public static void performTriggeredLog(Map srcMDC, Object[] entry) {
         // System.out.println(Arrays.toString(entry));
         int m = (int) entry[MTHD_IDX];
-        int level = I_LEVEL_ERROR;//(int) entry[LVL_IDX];
+        int level = TRIGGERD_OUT_LOG_LEVEL;//(int) entry[LVL_IDX];
         int realLevel = (int) entry[LVL_IDX];
-        if (realLevel > getBufferOutLevel()) {
-            return;
-        }
 
         Map<String, String> mdcCopy = (Map) entry[MDC_IDX];
 
@@ -566,7 +568,7 @@ public class Logger implements org.slf4j.Logger {
         delegate.trace(marker, format, arg1, arg2);
     }
 
-    private void updateBuffer(int mthdIdx, Object logger, Map mdc, int level, String msgOrFormat, Object... arg5) {
+    private void updateBuffer(int mthdIdx, Logger logger, Map mdc, int level, String msgOrFormat, Object... arg5) {
         synchronized (getCircularList()) {
             Object[] current = getBufferEntry();
             current[MTHD_IDX] = Integer.valueOf(mthdIdx);
@@ -581,7 +583,7 @@ public class Logger implements org.slf4j.Logger {
     }
 
     private void dispatchLog1(int level, String msg, boolean useBuffer) {
-        if (useBuffer) {
+        if (useBuffer && level <= getMaxBufferOutLevel()) {
             updateBuffer(1, this, MDC.getCopyOfContextMap(), level, msg, null);
         }
 
@@ -622,7 +624,7 @@ public class Logger implements org.slf4j.Logger {
     }
 
     private void dispatchLog3(int level, String msg, Object arg, boolean useBuffer) {
-        if (useBuffer) {
+        if (useBuffer && level <= getMaxBufferOutLevel()) {
             updateBuffer(3, this, MDC.getCopyOfContextMap(), level, msg, arg);
         }
 
@@ -729,7 +731,7 @@ public class Logger implements org.slf4j.Logger {
     }
 
     private void dispatchLog4(int level, String msg, Object arg1, Object arg2, boolean useBuffer) {
-        if (useBuffer) {
+        if (useBuffer && level <= getMaxBufferOutLevel()) {
             updateBuffer(4, this, MDC.getCopyOfContextMap(), level, msg, arg1, arg2);
         }
 
@@ -770,7 +772,7 @@ public class Logger implements org.slf4j.Logger {
     }
 
     private void dispatchLog5(int level, String msg, Throwable t, boolean useBuffer) {
-        if (useBuffer) {
+        if (useBuffer && level <= getMaxBufferOutLevel()) {
             updateBuffer(5, this, MDC.getCopyOfContextMap(), level, msg, t);
         }
         switch (evaluateTargetLevel(level)) {
@@ -810,7 +812,7 @@ public class Logger implements org.slf4j.Logger {
     }
 
     private void dispatchLog2(int level, String format, boolean useBuffer, Object... arguments) {
-        if (useBuffer) {
+        if (useBuffer && level <= getMaxBufferOutLevel()) {
             updateBuffer(1, this, MDC.getCopyOfContextMap(), level, format, arguments);
         }
         switch (evaluateTargetLevel(level)) {

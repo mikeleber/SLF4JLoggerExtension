@@ -72,13 +72,13 @@ public class LoggerManager implements LoggerManagerMBean {
     }
 
     @Override
-    public int getBufferOutLevel() throws IOException {
-        return Logger.getBufferOutLevel();
+    public int getMaxBufferOutLevel() throws IOException {
+        return Logger.getMaxBufferOutLevel();
     }
 
     @Override
-    public void setBufferOutLevel(int level) throws IOException {
-        Logger.setBufferOutLevel(level);
+    public void setMaxBufferOutLevel(int level) throws IOException {
+        Logger.setMaxBufferOutLevel(level);
     }
 
     /**
