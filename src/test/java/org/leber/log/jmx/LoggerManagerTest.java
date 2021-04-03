@@ -3,7 +3,6 @@ package org.leber.log.jmx;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.leber.log.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import java.util.HashMap;
@@ -26,8 +25,8 @@ private static final Logger LOGGER = Logger.getLogger(LoggerManagerTest.class);
     //    Assertions.assertEquals("",loggerName);
         Runnable target;
         while(true){
-      new Thread(()->createLogs(1)).start();
-      new Thread(()->createLogs(3)).start();
+     // new Thread(()->createLogs(1)).start();
+     // new Thread(()->createLogs(3)).start();
         createLogs(2);}
 
     }
@@ -38,15 +37,14 @@ private static final Logger LOGGER = Logger.getLogger(LoggerManagerTest.class);
         MDC.setContextMap(mdc);
         for (int i=0;i<10000;i++){
        try {
+           LOGGER.trace(ti+" trace"+ i);
+           LOGGER.performance(ti+" performance"+ i);
            LOGGER.audit(ti+" audit"+ i);
+           LOGGER.debug(ti+" debug"+ i);
+           LOGGER.info(ti+" info"+ i);
+           LOGGER.warn(ti+" warn"+ i);
            LOGGER.error(ti+" error"+ i);
-            LOGGER.info(ti+" info"+ i);
-            LOGGER.warn(ti+" warn"+ i);
-            LOGGER.debug(ti+" debug"+ i);
-            LOGGER.trace(ti+" trace"+ i);
-            LOGGER.performance(ti+" performance"+ i);
-            LOGGER.error(ti+" "+ i);
-            Thread.currentThread().sleep(10);
+            Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

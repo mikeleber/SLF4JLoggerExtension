@@ -9,7 +9,7 @@ class RollingArrayTest {
 
     @Test
     public void testFirst(){
-        RollingArray<String>roller = new RollingArray<String>(String.class,20);
+        RollingArray<String>roller = new RollingArray<>(String.class, 20);
         for (int i = 1; i<22;i++){
             roller.push(""+i);
             if (i==1){
@@ -27,7 +27,7 @@ class RollingArrayTest {
     }
     @Test
     public void testPush(){
-        RollingArray<String>roller = new RollingArray<String>(String.class,20);
+        RollingArray<String>roller = new RollingArray<>(String.class, 20);
         for (int i = 1; i<22;i++){
             roller.push(""+i);
         }
@@ -37,7 +37,7 @@ class RollingArrayTest {
     }
     @Test
     public void testToArray(){
-        RollingArray<String>roller = new RollingArray<String>(String.class,20);
+        RollingArray<String>roller = new RollingArray<>(String.class, 20);
         for (int i = 1; i<22;i++){
             roller.push(""+i);
         }
@@ -48,7 +48,7 @@ class RollingArrayTest {
     }
     @Test
     public void testRollingWithLateSetValue(){
-        RollingArray<Object[]>roller = new RollingArray<Object[]>(Object[].class,20);
+        RollingArray<Object[]>roller = new RollingArray<>(Object[].class, 20);
         for (int i = 0; i < roller.getArray().length; i++) {
             roller.getArray()[i] = new Object[1];
         }

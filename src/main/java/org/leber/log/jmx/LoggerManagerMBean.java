@@ -3,36 +3,35 @@ package org.leber.log.jmx;
 import java.io.IOException;
 
 public interface LoggerManagerMBean {
-    String getRootLogLevel() throws IOException;
+    String getRootLogLevel();
 
-    void setRootLogLevel(String level) throws IOException;
+    void setRootLogLevel(String level);
 
     int getBufferCapacity();
 
     void setBufferCapacity(int bufferCapacity);
 
-    String getBufferFlushSignal() throws IOException;
+    String getBufferFlushSignal();
 
-    void setBufferFlushSignal(String filter) throws IOException;
+    void setBufferFlushSignal(String filter);
 
-    boolean getBuffering() throws IOException;
+    boolean getBuffering();
 
-    void setBuffering(boolean buffer) throws IOException;
+    void setBuffering(boolean buffer);
 
-    String getMdcEntryBufferFilter() throws IOException;
+    String getMdcEntryBufferFilter();
 
-    void setMdcEntryBufferFilter(String marker) throws IOException;
+    void setMdcEntryBufferFilter(String marker);
 
-    int getMaxBufferOutLevel() throws IOException;
+    int getMaxBufferOutLevel();
 
-    void setMaxBufferOutLevel(int level) throws IOException;
+    void setMaxBufferOutLevel(int level);
 
     /**
      * Returns the current Log-level mapping.
      *
-     * @throws IOException
      */
-    String getLevelMapping() throws IOException;
+    String getLevelMapping();
 
     /**
      * With this method you can set a Log-level mapping. This means you can route a log entry from the original level like debug
@@ -40,11 +39,10 @@ public interface LoggerManagerMBean {
      * debug2info,trace2info
      *
      * @param mapping
-     * @throws IOException
      */
-    void setLevelMapping(String mapping) throws IOException;
+    void setLevelMapping(String mapping);
 
-    String getFilter() throws IOException;
+    String getFilter();
 
-    void setFilter(String filter) throws IOException;
+    void setFilter(String filter);
 }

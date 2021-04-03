@@ -22,7 +22,7 @@ public class Logger implements org.slf4j.Logger {
     public static final int I_LEVEL_NONE = 0;
     public static final int I_LEVEL_AUDIT = 2;
     public static final int I_LEVEL_INFO = 3;
-    public static final int TRIGGERD_OUT_LOG_LEVEL = I_LEVEL_INFO;
+    public static final int TRIGGERED_OUT_LOG_LEVEL = I_LEVEL_INFO;
     public static final int I_LEVEL_WARN = 4;
     public static final int I_LEVEL_DEBUG = 5;
     public static final int I_LEVEL_TRACE = 6;
@@ -286,12 +286,12 @@ public class Logger implements org.slf4j.Logger {
                 format = MessageFormatter.arrayFormat(format, args).getMessage();
             }
             if (bufferFlushSignal.matcher(format).find()) {
-                dispatchLog1(TRIGGERD_OUT_LOG_LEVEL,"Perform triggeredLog",false);
+                dispatchLog1(TRIGGERED_OUT_LOG_LEVEL,"Perform triggeredLog",false);
                 RollingArray.traverse(e -> performTriggeredLog(currentMDC, e), bufferedLogs.toArray());
                 //Reapply mdc to current thread
                 MDC.setContextMap(currentMDC);
                 bufferedLogs.makeEmpty();
-                dispatchLog1(TRIGGERD_OUT_LOG_LEVEL,"Perform triggeredLog end",false);
+                dispatchLog1(TRIGGERED_OUT_LOG_LEVEL,"Perform triggeredLog end",false);
             }
         }
     }
@@ -414,7 +414,7 @@ public class Logger implements org.slf4j.Logger {
     public static void performTriggeredLog(Map srcMDC, Object[] entry) {
         // System.out.println(Arrays.toString(entry));
         int m = (int) entry[MTHD_IDX];
-        int level = TRIGGERD_OUT_LOG_LEVEL;//(int) entry[LVL_IDX];
+        int level = TRIGGERED_OUT_LOG_LEVEL;//(int) entry[LVL_IDX];
         int realLevel = (int) entry[LVL_IDX];
 
         Map<String, String> mdcCopy = (Map) entry[MDC_IDX];
@@ -477,7 +477,7 @@ public class Logger implements org.slf4j.Logger {
      * @param step   the step
      * @return the int [ ]
      */
-    public static final int[] createIntSequence(int start, int length, int step) {
+    public static int[] createIntSequence(int start, int length, int step) {
         int[] result = new int[length];
         int j = start;
         int end = j + length;

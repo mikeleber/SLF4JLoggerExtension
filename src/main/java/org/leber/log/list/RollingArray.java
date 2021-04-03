@@ -23,8 +23,8 @@ public class RollingArray<T> {
     }
 
     public static <T> void traverse(Consumer<T> consumer, T[] array) {
-        for (int i = 0; i < array.length; i++) {
-            consumer.accept(array[i]);
+        for (T t : array) {
+            consumer.accept(t);
         }
     }
 
@@ -115,8 +115,8 @@ public class RollingArray<T> {
     }
 
     public void push(T[] vals) {
-        for (int v = 0; v < vals.length; v++) {
-            push(vals[v]);
+        for (T val : vals) {
+            push(val);
         }
     }
 
