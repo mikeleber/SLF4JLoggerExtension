@@ -1,7 +1,6 @@
 package org.leber.log;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.util.Strings;
 import org.leber.log.list.RollingArray;
 import org.slf4j.MDC;
 import org.slf4j.Marker;
@@ -367,7 +366,7 @@ public class Logger implements org.slf4j.Logger {
     }
 
     public static void setLogFilter(String logFilter) {
-        if (Strings.isNotEmpty(logFilter)) {
+        if (StringUtils.isNotEmpty(logFilter)) {
             Logger.logFilterString = logFilter;
             Logger.logFilter = Pattern.compile(logFilter);
         } else {
