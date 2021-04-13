@@ -1,4 +1,4 @@
-package org.leber.log.jmx;
+package org.basetools.log.jmx;
 
 import java.io.IOException;
 

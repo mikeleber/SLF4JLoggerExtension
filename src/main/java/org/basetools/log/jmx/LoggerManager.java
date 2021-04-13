@@ -1,8 +1,6 @@
-package org.leber.log.jmx;
+package org.basetools.log.jmx;
 
-import org.leber.log.Logger;
-
-import java.io.IOException;
+import org.basetools.log.Logger;
 
 public class LoggerManager implements LoggerManagerMBean {
 

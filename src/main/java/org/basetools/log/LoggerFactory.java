@@ -1,7 +1,7 @@
-package org.leber.log;
+package org.basetools.log;
 
 import org.apache.commons.lang3.StringUtils;
-import org.leber.log.jmx.LoggerManagerAgent;
+import org.basetools.log.jmx.LoggerManagerAgent;
 import org.slf4j.ILoggerFactory;
 
 import java.util.concurrent.ConcurrentHashMap;

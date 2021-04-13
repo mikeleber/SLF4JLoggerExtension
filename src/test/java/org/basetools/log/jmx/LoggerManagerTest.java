@@ -1,8 +1,8 @@
-package org.leber.log.jmx;
+package org.basetools.log.jmx;
 
+import org.basetools.log.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.leber.log.Logger;
 import org.slf4j.MDC;
 
 import java.util.HashMap;

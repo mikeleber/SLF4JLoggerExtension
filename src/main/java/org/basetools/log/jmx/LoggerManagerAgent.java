@@ -1,4 +1,4 @@
-package org.leber.log.jmx;
+package org.basetools.log.jmx;
 
 import javax.management.*;
 import java.lang.management.ManagementFactory;
