@@ -32,9 +32,9 @@ public class LoggerFactory implements ILoggerFactory {
     }
 
     private void initialize() {
-        String logMapping = System.getenv("org.modelui.log.mapping");
+        String logMapping = System.getenv("org.leber.slf4jloggerext.log.mapping");
         if (StringUtils.isEmpty(logMapping)) {
-            logMapping = System.getProperty("org.modelui.log.mapping");
+            logMapping = System.getProperty("org.leber.slf4jloggerext.log.mapping");
         }
         try {
             if (!StringUtils.isEmpty(logMapping)) {

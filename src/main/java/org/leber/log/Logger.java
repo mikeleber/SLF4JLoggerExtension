@@ -261,15 +261,15 @@ public class Logger implements org.slf4j.Logger {
         }
     }
 
-    public static boolean isStringInList(List<String> myList, String stringToFind) {
-        return myList.stream().anyMatch(s -> s.equalsIgnoreCase(stringToFind));
-    }
-
-    public static boolean isStringInList(String[] myList, String stringToFind) {
+    private static boolean isStringInList(String[] myList, String stringToFind) {
         return isStringInList(Arrays.asList(myList), stringToFind);
     }
 
-    public static boolean matchFilter(String format, Object... args) {
+    private static boolean isStringInList(List<String> myList, String stringToFind) {
+        return myList.stream().anyMatch(s -> s.equalsIgnoreCase(stringToFind));
+    }
+
+    private static boolean matchFilter(String format, Object... args) {
         if (format != null && logFilter != null) {
             if (args != null && args.length > 0) {
                 format = MessageFormatter.arrayFormat(format, args).getMessage();
@@ -477,7 +477,7 @@ public class Logger implements org.slf4j.Logger {
      * @param step   the step
      * @return the int [ ]
      */
-    public static final int[] createIntSequence(int start, int length, int step) {
+    private static final int[] createIntSequence(int start, int length, int step) {
         int[] result = new int[length];
         int j = start;
         int end = j + length;

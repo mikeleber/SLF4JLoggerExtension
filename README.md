@@ -14,6 +14,7 @@ LoggerFactory.getLogger(LoggerManagerTest.class);
 
 
 ##Log Level mapping:
+Logger.setLogLevelMapping("info2error",...)
 
 ##Buffer usage:
 
