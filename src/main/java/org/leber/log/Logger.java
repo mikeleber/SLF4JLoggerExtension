@@ -167,7 +167,6 @@ public class Logger implements org.slf4j.Logger {
     }
 
     public static void setGlobalLogLevels(String levels) {
-
         if (levels != null) {
             String[] levelsSplit = levels.split(",");
             for (String aLevel : levelsSplit) {
@@ -307,7 +306,6 @@ public class Logger implements org.slf4j.Logger {
                 result.append(",");
             }
         }
-
         return result.toString().trim();
     }
 
@@ -340,15 +338,12 @@ public class Logger implements org.slf4j.Logger {
             }
         }
     }
-
     public static Pattern getBufferFlushSignal() {
         return bufferFlushSignal;
     }
-
     public static void setBufferFlushSignal(Pattern signal) {
         bufferFlushSignal = signal;
     }
-
     public static void setBufferFlushSignal(String signal) {
         bufferFlushSignalString = signal;
         if (signal != null) {
@@ -357,15 +352,12 @@ public class Logger implements org.slf4j.Logger {
             Logger.bufferFlushSignal = null;
         }
     }
-
     public static String getBufferFlushSignalString() {
         return bufferFlushSignalString;
     }
-
     public static Pattern getLogFilter() {
         return logFilter;
     }
-
     public static void setLogFilter(String logFilter) {
         if (Strings.isNotEmpty(logFilter)) {
             Logger.logFilterString = logFilter;
@@ -374,11 +366,9 @@ public class Logger implements org.slf4j.Logger {
             Logger.logFilter = null;
         }
     }
-
     public static String getLogFilterString() {
         return logFilterString;
     }
-
     private static RollingArray<Object[]> getCircularList() {
         if (bufferedLogs == null) {
             bufferedLogs = new RollingArray<>(Object[].class, BUFFER_CAPACITY);
@@ -388,16 +378,13 @@ public class Logger implements org.slf4j.Logger {
         }
         return bufferedLogs;
     }
-
     public static int getBufferCapacity() {
         return BUFFER_CAPACITY;
     }
-
     public static void setBufferCapacity(int bufferCapacity) {
         BUFFER_CAPACITY = bufferCapacity;
         bufferedLogs = null;
     }
-
     private static Object[] getBufferEntry() {
         Object[] buffer;
         if (getCircularList().size() == 0) {
@@ -407,22 +394,17 @@ public class Logger implements org.slf4j.Logger {
             getCircularList().moveForward();
             buffer = getCircularList().peek();
         }
-
         return buffer;
     }
-
     public static void performTriggeredLog(Map srcMDC, Object[] entry) {
         // System.out.println(Arrays.toString(entry));
         int m = (int) entry[MTHD_IDX];
         int level = TRIGGERD_OUT_LOG_LEVEL;//(int) entry[LVL_IDX];
         int realLevel = (int) entry[LVL_IDX];
-
         Map<String, String> mdcCopy = (Map) entry[MDC_IDX];
-
         if (!matchGroupMarker(getMdcEntryBufferFilter(), srcMDC, mdcCopy)) {
             return;
         }
-
         MDC.setContextMap(mdcCopy);
         String realLevelTxt = evaluateLevelFor(realLevel);
         switch (m) {
@@ -443,16 +425,13 @@ public class Logger implements org.slf4j.Logger {
                 break;
         }
     }
-
     private static boolean matchGroupMarker(String bufferGroupMarker, Map srcMDC, Map<String, String> mdcCopy) {
-
         if (getMdcEntryBufferFilter() != null) {
             return Objects.equals(srcMDC.get(bufferGroupMarker), mdcCopy.get(bufferGroupMarker));
         } else {
             return true;
         }
     }
-
     public static void performTriggeredLog() {
         synchronized (getCircularList()) {
             Map mdcMap = MDC.getCopyOfContextMap();
@@ -460,15 +439,12 @@ public class Logger implements org.slf4j.Logger {
             MDC.setContextMap(mdcMap);
         }
     }
-
     public static boolean isBuffering() {
         return useBuffering;
     }
-
     public static void setBuffering(boolean use) {
         useBuffering = use;
     }
-
     /**
      * Create int sequence int [ ].
      *
@@ -488,15 +464,12 @@ public class Logger implements org.slf4j.Logger {
         }
         return result;
     }
-
     public void logAction(ACTION action) {
         dispatchLog3(I_LEVEL_INFO, "{}", action.getAction(), useBuffering);
     }
-
     public void logAction(ACTION action, String parameters) {
         dispatchLog4(I_LEVEL_INFO, "{} {}", action.getAction(), parameters, useBuffering);
     }
-
     public void logAction(String viewName, ACTION action) {
         dispatchLog4(I_LEVEL_INFO, "{} view_name={}", action.getAction(), viewName, useBuffering);
     }
@@ -504,70 +477,55 @@ public class Logger implements org.slf4j.Logger {
     public void logAction(String viewName, ACTION action, String parameters) {
         dispatchLog2(I_LEVEL_INFO, "{} view_name={} {}", useBuffering, action.getAction(), viewName, parameters);
     }
-
     @Override
     public boolean isTraceEnabled() {
         return globalTraceEnabled && traceEnabled;
     }
-
     public void setTraceEnabled(boolean traceEnabled) {
         this.traceEnabled = traceEnabled;
     }
-
     public boolean isPerformanceEnabled() {
         return globalPerformanceEnabled && performanceEnabled;
     }
-
     public void setPerformanceEnabled(boolean enabled) {
         performanceEnabled = enabled;
     }
-
     @Override
     public void trace(String msg) {
         dispatchLog1(I_LEVEL_TRACE, msg, useBuffering);
     }
-
     @Override
     public void trace(String format, Object arg) {
         dispatchLog3(I_LEVEL_TRACE, format, arg, useBuffering);
     }
-
     @Override
     public void trace(String format, Object arg1, Object arg2) {
         dispatchLog4(I_LEVEL_TRACE, format, arg1, arg2, useBuffering);
     }
-
     @Override
     public void trace(String format, Object... arguments) {
-
         dispatchLog2(I_LEVEL_TRACE, format, useBuffering, arguments);
     }
-
     @Override
     public void trace(String msg, Throwable t) {
         dispatchLog5(I_LEVEL_TRACE, msg, t, useBuffering);
     }
-
     @Override
     public boolean isTraceEnabled(Marker marker) {
         return delegate.isTraceEnabled(marker);
     }
-
     @Override
     public void trace(Marker marker, String msg) {
         delegate.trace(marker, msg);
     }
-
     @Override
     public void trace(Marker marker, String format, Object arg) {
         delegate.trace(marker, format, arg);
     }
-
     @Override
     public void trace(Marker marker, String format, Object arg1, Object arg2) {
         delegate.trace(marker, format, arg1, arg2);
     }
-
     private void updateBuffer(int mthdIdx, Logger logger, Map mdc, int level, String msgOrFormat, Object... arg5) {
         synchronized (getCircularList()) {
             Object[] current = getBufferEntry();
@@ -577,16 +535,13 @@ public class Logger implements org.slf4j.Logger {
             current[LVL_IDX] = Integer.valueOf(level);
             current[4] = msgOrFormat;
             current[5] = arg5;
-
             handleFlushSignal(mdc, msgOrFormat, arg5);
         }
     }
-
     private void dispatchLog1(int level, String msg, boolean useBuffer) {
         if (useBuffer && level <= getMaxBufferOutLevel()) {
             updateBuffer(1, this, MDC.getCopyOfContextMap(), level, msg, null);
         }
-
         switch (evaluateTargetLevel(level)) {
             case I_LEVEL_AUDIT:
                 delegate.info(msg);
@@ -622,12 +577,10 @@ public class Logger implements org.slf4j.Logger {
                 break;
         }
     }
-
     private void dispatchLog3(int level, String msg, Object arg, boolean useBuffer) {
         if (useBuffer && level <= getMaxBufferOutLevel()) {
             updateBuffer(3, this, MDC.getCopyOfContextMap(), level, msg, arg);
         }
-
         switch (evaluateTargetLevel(level)) {
             case I_LEVEL_AUDIT:
                 delegate.info(msg, arg);
@@ -663,7 +616,6 @@ public class Logger implements org.slf4j.Logger {
                 break;
         }
     }
-
     private boolean isEnabled(int level) {
         switch (level) {
             case I_LEVEL_AUDIT:
@@ -683,7 +635,6 @@ public class Logger implements org.slf4j.Logger {
         }
         return true;
     }
-
     private int evaluateTargetLevel(int level) {
         boolean enabled = true;
         boolean delegateEnabled = true;
@@ -729,12 +680,10 @@ public class Logger implements org.slf4j.Logger {
             return I_LEVEL_NONE;
         }
     }
-
     private void dispatchLog4(int level, String msg, Object arg1, Object arg2, boolean useBuffer) {
         if (useBuffer && level <= getMaxBufferOutLevel()) {
             updateBuffer(4, this, MDC.getCopyOfContextMap(), level, msg, arg1, arg2);
         }
-
         switch (evaluateTargetLevel(level)) {
             case I_LEVEL_AUDIT:
                 delegate.info(msg, arg1, arg2);
@@ -770,7 +719,6 @@ public class Logger implements org.slf4j.Logger {
                 break;
         }
     }
-
     private void dispatchLog5(int level, String msg, Throwable t, boolean useBuffer) {
         if (useBuffer && level <= getMaxBufferOutLevel()) {
             updateBuffer(5, this, MDC.getCopyOfContextMap(), level, msg, t);
@@ -810,7 +758,6 @@ public class Logger implements org.slf4j.Logger {
                 break;
         }
     }
-
     private void dispatchLog2(int level, String format, boolean useBuffer, Object... arguments) {
         if (useBuffer && level <= getMaxBufferOutLevel()) {
             updateBuffer(1, this, MDC.getCopyOfContextMap(), level, format, arguments);
@@ -850,296 +797,231 @@ public class Logger implements org.slf4j.Logger {
                 break;
         }
     }
-
     @Override
     public void trace(Marker marker, String format, Object... arguments) {
         delegate.trace(marker, format, arguments);
     }
-
     @Override
     public void trace(Marker marker, String msg, Throwable t) {
         delegate.trace(marker, msg, t);
     }
-
     @Override
     public boolean isDebugEnabled() {
         return globalDebugEnabled && debugEnabled;
     }
-
     public void setDebugEnabled(boolean debugEnabled) {
         this.debugEnabled = debugEnabled;
     }
-
     @Override
     public void debug(String msg) {
         dispatchLog1(I_LEVEL_DEBUG, msg, useBuffering);
     }
-
     @Override
     public void debug(String format, Object arg) {
         dispatchLog3(I_LEVEL_DEBUG, format, arg, useBuffering);
     }
-
     @Override
     public void debug(String format, Object arg1, Object arg2) {
         dispatchLog4(I_LEVEL_DEBUG, format, arg1, arg2, useBuffering);
     }
-
     @Override
     public void debug(String format, Object... arguments) {
         dispatchLog2(I_LEVEL_DEBUG, format, useBuffering, arguments);
     }
-
     @Override
     public void debug(String msg, Throwable t) {
-
         dispatchLog5(I_LEVEL_DEBUG, msg, t, useBuffering);
     }
-
     @Override
     public boolean isDebugEnabled(Marker marker) {
         return delegate.isDebugEnabled(marker);
     }
-
     @Override
     public void debug(Marker marker, String msg) {
         delegate.debug(marker, msg);
     }
-
     @Override
     public void debug(Marker marker, String format, Object arg) {
         delegate.debug(marker, format, arg);
     }
-
     @Override
     public void debug(Marker marker, String format, Object arg1, Object arg2) {
-
         delegate.debug(marker, format, arg1, arg2);
     }
-
     @Override
     public void debug(Marker marker, String format, Object... arguments) {
         delegate.debug(marker, format, arguments);
     }
-
     @Override
     public void debug(Marker marker, String msg, Throwable t) {
-
         delegate.debug(marker, msg, t);
     }
-
     @Override
     public boolean isInfoEnabled() {
-
         return globalInfoEnabled && infoEnabled;
     }
-
     public void setInfoEnabled(boolean infoEnabled) {
         this.infoEnabled = infoEnabled;
     }
-
     @Override
     public void info(String msg) {
         dispatchLog1(I_LEVEL_INFO, msg, useBuffering);
     }
-
     @Override
     public void info(String format, Object arg) {
         dispatchLog3(I_LEVEL_INFO, format, arg, useBuffering);
     }
-
     @Override
     public void info(String format, Object arg1, Object arg2) {
         dispatchLog4(I_LEVEL_INFO, format, arg1, arg2, useBuffering);
     }
-
     @Override
     public void info(String format, Object... arguments) {
         dispatchLog2(I_LEVEL_INFO, format, useBuffering, arguments);
     }
-
     @Override
     public void info(String msg, Throwable t) {
         dispatchLog5(I_LEVEL_INFO, msg, t, useBuffering);
     }
-
     @Override
     public boolean isInfoEnabled(Marker marker) {
         return delegate.isInfoEnabled(marker);
     }
-
     @Override
     public void info(Marker marker, String msg) {
         delegate.info(marker, msg);
     }
-
     @Override
     public void info(Marker marker, String format, Object arg) {
         delegate.info(marker, format, arg);
     }
-
     @Override
     public void info(Marker marker, String format, Object arg1, Object arg2) {
         delegate.info(marker, format, arg1, arg2);
     }
-
     @Override
     public void info(Marker marker, String format, Object... arguments) {
         delegate.info(marker, format, arguments);
     }
-
     @Override
     public void info(Marker marker, String msg, Throwable t) {
         delegate.info(marker, msg, t);
     }
-
     @Override
     public boolean isWarnEnabled() {
         return globalWarnEnabled && warnEnabled;
     }
-
     public void setWarnEnabled(boolean warnEnabled) {
         this.warnEnabled = warnEnabled;
     }
-
     @Override
     public void warn(String msg) {
         dispatchLog1(I_LEVEL_WARN, msg, useBuffering);
     }
-
     @Override
     public void warn(String format, Object arg) {
         dispatchLog3(I_LEVEL_WARN, format, arg, useBuffering);
     }
-
     @Override
     public void warn(String format, Object arg1, Object arg2) {
         dispatchLog4(I_LEVEL_WARN, format, arg1, arg2, useBuffering);
     }
-
     @Override
     public void warn(String format, Object... arguments) {
         dispatchLog2(I_LEVEL_WARN, format, useBuffering, arguments);
     }
-
     @Override
     public void warn(String msg, Throwable t) {
         dispatchLog5(I_LEVEL_WARN, msg, t, useBuffering);
     }
-
     @Override
     public boolean isWarnEnabled(Marker marker) {
         return delegate.isWarnEnabled(marker);
     }
-
     @Override
     public void warn(Marker marker, String msg) {
         delegate.warn(marker, msg);
     }
-
     @Override
     public void warn(Marker marker, String format, Object arg) {
         delegate.warn(marker, format, arg);
     }
-
     @Override
     public void warn(Marker marker, String format, Object arg1, Object arg2) {
         delegate.warn(marker, format, arg1, arg2);
     }
-
     @Override
     public void warn(Marker marker, String format, Object... arguments) {
         delegate.warn(marker, format, arguments);
     }
-
     @Override
     public void warn(Marker marker, String msg, Throwable t) {
         delegate.warn(marker, msg, t);
     }
-
     @Override
     public boolean isErrorEnabled() {
         return globalErrorEnabled && errorEnabled;
     }
-
     public void setErrorEnabled(boolean errorEnabled) {
         this.errorEnabled = errorEnabled;
     }
-
     @Override
     public void error(String msg) {
-
         dispatchLog1(I_LEVEL_ERROR, msg, useBuffering);
     }
-
     @Override
     public void error(String format, Object arg) {
         dispatchLog3(I_LEVEL_ERROR, format, arg, useBuffering);
     }
-
     @Override
     public void error(String format, Object arg1, Object arg2) {
         dispatchLog4(I_LEVEL_ERROR, format, arg1, arg2, useBuffering);
     }
-
     @Override
     public void error(String format, Object... arguments) {
         dispatchLog2(I_LEVEL_ERROR, format, useBuffering, arguments);
     }
-
     @Override
     public void error(String msg, Throwable t) {
         dispatchLog5(I_LEVEL_ERROR, msg, t, useBuffering);
     }
-
     @Override
     public boolean isErrorEnabled(Marker marker) {
         return delegate.isErrorEnabled(marker);
     }
-
     @Override
     public void error(Marker marker, String msg) {
         delegate.error(marker, msg);
     }
-
     @Override
     public void error(Marker marker, String format, Object arg) {
         delegate.error(marker, format, arg);
     }
-
     @Override
     public void error(Marker marker, String format, Object arg1, Object arg2) {
         delegate.error(marker, format, arg1, arg2);
     }
-
     @Override
     public void error(Marker marker, String format, Object... arguments) {
-
         delegate.error(marker, format, arguments);
     }
-
     @Override
     public void error(Marker marker, String msg, Throwable t) {
         delegate.error(marker, msg, t);
     }
-
     @Override
     public String getName() {
         return delegate.getName();
     }
-
     public boolean isAuditEnabled() {
         return globalAuditEnabled && auditEnabled;
     }
-
     public void setAuditEnabled(boolean auditEnabled) {
         this.auditEnabled = auditEnabled;
     }
-
     public boolean isAuditEnabled(Marker marker) {
         return isAuditEnabled();
     }
-
     /**
      * Log a message at the AUDIT level according to the specified format
      * and arguments.
@@ -1152,7 +1034,6 @@ public class Logger implements org.slf4j.Logger {
     public void audit(String msg) {
         dispatchLog1(I_LEVEL_AUDIT, msg, useBuffering);
     }
-
     /**
      * Log a message at the AUDIT level according to the specified format
      * and arguments.
@@ -1166,7 +1047,6 @@ public class Logger implements org.slf4j.Logger {
     public void audit(String format, Object arg) {
         dispatchLog2(I_LEVEL_AUDIT, format, useBuffering, arg);
     }
-
     /**
      * Log a message at the AUDIT level according to the specified format
      * and arguments.
@@ -1219,7 +1099,6 @@ public class Logger implements org.slf4j.Logger {
     public void audit(String format, Object... arguments) {
         dispatchLog2(I_LEVEL_AUDIT, format, useBuffering, arguments);
     }
-
     public String getLevels() {
         StringBuilder result = new StringBuilder();
         if (isInfoEnabled()) {
@@ -1245,7 +1124,6 @@ public class Logger implements org.slf4j.Logger {
         }
         return result.toString().trim();
     }
-
     public interface ACTION {
         String getAction();
     }
