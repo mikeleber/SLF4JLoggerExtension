@@ -167,9 +167,11 @@ public class Logger implements org.slf4j.Logger {
     }
 
     public static void setGlobalLogLevels(String levels) {
+        setGlobalLogLevels(levels!=null?levels.split(","):null);
+    }
+    public static void setGlobalLogLevels(String[] levels) {
         if (levels != null) {
-            String[] levelsSplit = levels.split(",");
-            for (String aLevel : levelsSplit) {
+            for (String aLevel : levels) {
                 switch (aLevel.trim().toLowerCase()) {
                     case LEVEL_AUDIT:
                         Logger.setGlobalAuditEnabled(true);
@@ -193,25 +195,25 @@ public class Logger implements org.slf4j.Logger {
                         Logger.setGlobalPerformanceEnabled(true);
                         break;
                 }
-                if (!isStringInList(levelsSplit, LEVEL_AUDIT)) {
+                if (!isStringInList(levels, LEVEL_AUDIT)) {
                     setGlobalAuditEnabled(false);
                 }
-                if (!isStringInList(levelsSplit, LEVEL_ERROR)) {
+                if (!isStringInList(levels, LEVEL_ERROR)) {
                     setGlobalErrorEnabled(false);
                 }
-                if (!isStringInList(levelsSplit, LEVEL_DEBUG)) {
+                if (!isStringInList(levels, LEVEL_DEBUG)) {
                     setGlobalDebugEnabled(false);
                 }
-                if (!isStringInList(levelsSplit, LEVEL_INFO)) {
+                if (!isStringInList(levels, LEVEL_INFO)) {
                     setGlobalInfoEnabled(false);
                 }
-                if (!isStringInList(levelsSplit, LEVEL_TRACE)) {
+                if (!isStringInList(levels, LEVEL_TRACE)) {
                     setGlobalTraceEnabled(false);
                 }
-                if (!isStringInList(levelsSplit, LEVEL_PERFORMANCE)) {
+                if (!isStringInList(levels, LEVEL_PERFORMANCE)) {
                     setGlobalPerformanceEnabled(false);
                 }
-                if (!isStringInList(levelsSplit, LEVEL_WARN)) {
+                if (!isStringInList(levels, LEVEL_WARN)) {
                     setGlobalWarnEnabled(false);
                 }
             }
@@ -261,10 +263,12 @@ public class Logger implements org.slf4j.Logger {
     }
 
     private static boolean isStringInList(String[] myList, String stringToFind) {
+        if (myList==null&&myList.length==0)return false;
         return isStringInList(Arrays.asList(myList), stringToFind);
     }
 
     private static boolean isStringInList(List<String> myList, String stringToFind) {
+        if (myList==null&&myList.size()==0)return false;
         return myList.stream().anyMatch(s -> s.equalsIgnoreCase(stringToFind));
     }
 

@@ -5,9 +5,14 @@ import org.leber.log.Logger;
 import java.io.IOException;
 
 public class LoggerManager implements LoggerManagerMBean {
+    private static  LoggerManager INSTANCE=new LoggerManager();
 
     public LoggerManager() {
         super();
+    }
+
+    public static LoggerManager getInstance() {
+        return INSTANCE;
     }
 
     @Override

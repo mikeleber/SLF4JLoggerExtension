@@ -10,7 +10,7 @@ public final class LoggerManagerAgent {
             MBeanServer server = ManagementFactory.getPlatformMBeanServer();
             ObjectName name = new ObjectName("org.leber.slf4jloggerext:name=Logger");
             if (!server.isRegistered(name)) {
-                server.registerMBean(new LoggerManager(), name);
+                server.registerMBean(LoggerManager.getInstance(), name);
             }
         } catch (MalformedObjectNameException | MBeanRegistrationException | NotCompliantMBeanException | InstanceAlreadyExistsException e) {
             e.printStackTrace();

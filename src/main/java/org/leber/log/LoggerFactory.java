@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentMap;
 public class LoggerFactory implements ILoggerFactory {
 
     private final ConcurrentMap<String, org.slf4j.Logger> loggerMap;
-    org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(Logger.class);
+    private final org.slf4j.Logger LOGGER = org.slf4j.LoggerFactory.getLogger(Logger.class);
 
     private LoggerFactory() {
         loggerMap = new ConcurrentHashMap<>();
@@ -26,9 +26,8 @@ public class LoggerFactory implements ILoggerFactory {
         return InstanceHolder.instance;
     }
 
-    public static org.slf4j.Logger getLogger(Class clazz) {
-        String name = clazz.getName();
-        return getInstance().getLogger(clazz.getName());
+    public static <T extends  org.slf4j.Logger> T getLogger(Class clazz) {
+        return (T)getInstance().getLogger(clazz.getName());
     }
 
     private void initialize() {
