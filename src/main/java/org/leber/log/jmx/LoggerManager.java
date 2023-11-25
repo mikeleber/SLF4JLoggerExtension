@@ -16,53 +16,53 @@ public class LoggerManager implements LoggerManagerMBean {
     }
 
     @Override
-    public String getRootLogLevel() throws IOException {
+    public String getRootLogLevel()  {
         return Logger.getGlobalLevels();
     }
 
     @Override
-    public void setRootLogLevel(String levels) throws IOException {
+    public void setRootLogLevel(String levels)   {
         System.out.println("LoggerManger: " + levels);
         Logger.setGlobalLogLevels(levels);
     }
 
     @Override
-    public String getFilter() throws IOException {
+    public String getFilter()  {
         return Logger.getLogFilterString();
     }
 
     @Override
-    public void setFilter(String filter) throws IOException {
+    public void setFilter(String filter)  {
         Logger.setLogFilter(filter);
     }
 
     @Override
-    public String getBufferFlushSignal() throws IOException {
+    public String getBufferFlushSignal()  {
         return Logger.getBufferFlushSignalString();
     }
 
     @Override
-    public void setBufferFlushSignal(String filter) throws IOException {
+    public void setBufferFlushSignal(String filter)  {
         Logger.setBufferFlushSignal(filter);
     }
 
     @Override
-    public boolean getBuffering() throws IOException {
+    public boolean getBuffering()  {
         return Logger.isBuffering();
     }
 
     @Override
-    public void setBuffering(boolean buffer) throws IOException {
+    public void setBuffering(boolean buffer)  {
         Logger.setBuffering(buffer);
     }
 
     @Override
-    public String getMdcEntryBufferFilter() throws IOException {
+    public String getMdcEntryBufferFilter()  {
         return Logger.getMdcEntryBufferFilter();
     }
 
     @Override
-    public void setMdcEntryBufferFilter(String marker) throws IOException {
+    public void setMdcEntryBufferFilter(String marker)  {
         Logger.setMdcEntryBufferFilter(marker);
     }
 
@@ -77,22 +77,22 @@ public class LoggerManager implements LoggerManagerMBean {
     }
 
     @Override
-    public int getMaxBufferOutLevel() throws IOException {
+    public int getMaxBufferOutLevel()  {
         return Logger.getMaxBufferOutLevel();
     }
 
     @Override
-    public void setMaxBufferOutLevel(int level) throws IOException {
+    public void setMaxBufferOutLevel(int level)  {
         Logger.setMaxBufferOutLevel(level);
     }
 
     /**
      * Returns the current Log-level mapping.
      *
-     * @throws IOException
+    
      */
     @Override
-    public String getLevelMapping() throws IOException {
+    public String getLevelMapping()  {
         return Logger.getLogLevelMapping();
     }
 
@@ -101,11 +101,11 @@ public class LoggerManager implements LoggerManagerMBean {
      * to another target level like info. The syntax is debug2info. To change more as one mapping separate the entries with ",".
      * debug2info,trace2info
      *
-     * @param mapping
-     * @throws IOException
+    param mapping
+    
      */
     @Override
-    public void setLevelMapping(String mapping) throws IOException {
+    public void setLevelMapping(String mapping)  {
         Logger.setLogLevelMapping(mapping);
     }
 }
