@@ -7,6 +7,10 @@ public interface LoggerManagerMBean {
 
     void setRootLogLevel(String level) throws IOException;
 
+    void setMinFlushTriggerLevel(int minLevel);
+
+    int getMinFlushTriggerLevel();
+
     int getBufferCapacity();
 
     void setBufferCapacity(int bufferCapacity);

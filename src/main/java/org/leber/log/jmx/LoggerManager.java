@@ -2,8 +2,6 @@ package org.leber.log.jmx;
 
 import org.leber.log.Logger;
 
-import java.io.IOException;
-
 public class LoggerManager implements LoggerManagerMBean {
     private static  LoggerManager INSTANCE=new LoggerManager();
 
@@ -67,6 +65,14 @@ public class LoggerManager implements LoggerManagerMBean {
     }
 
     @Override
+    public void setMinFlushTriggerLevel(int minLevel) {
+        Logger.setMinFlushTriggerLevel(minLevel);
+    }
+
+    @Override
+    public int getMinFlushTriggerLevel() {
+        return Logger.getMinFlushTriggerLevel();
+    }
     public int getBufferCapacity() {
         return Logger.getBufferCapacity();
     }
