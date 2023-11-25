@@ -40,6 +40,7 @@ public class Logger implements org.slf4j.Logger {
     public static Pattern logFilter;
     public static String logFilterString;
     public static Pattern bufferFlushSignal;
+    public static int minFlushTriggerLevel;
     public static String bufferFlushSignalString;
     public static String mdcEntryBufferFilter;
     public static int maxBufferOutLevel = I_LEVEL_PERFORMANCE;
@@ -283,20 +284,8 @@ public class Logger implements org.slf4j.Logger {
         }
     }
 
-    public  void handleFlushSignal(Map currentMDC, String format, Object... args) {
-        if (format != null && bufferFlushSignal != null) {
-            if (args != null && args.length > 0) {
-                format = MessageFormatter.arrayFormat(format, args).getMessage();
-            }
-            if (bufferFlushSignal.matcher(format).find()) {
-                dispatchLog1(TRIGGERD_OUT_LOG_LEVEL,"Perform triggeredLog",false);
-                RollingArray.traverse(e -> performTriggeredLog(currentMDC, e), bufferedLogs.toArray());
-                //Reapply mdc to current thread
-                MDC.setContextMap(currentMDC);
-                bufferedLogs.makeEmpty();
-                dispatchLog1(TRIGGERD_OUT_LOG_LEVEL,"Perform triggeredLog end",false);
-            }
-        }
+    public static int getMinFlushTriggerLevel() {
+        return minFlushTriggerLevel;
     }
 
     public static String getLogLevelMapping() {
@@ -345,6 +334,24 @@ public class Logger implements org.slf4j.Logger {
     public static Pattern getBufferFlushSignal() {
         return bufferFlushSignal;
     }
+
+    public static void setMinFlushTriggerLevel(int minFlushTriggerLevel) {
+        Logger.minFlushTriggerLevel = minFlushTriggerLevel;
+    }
+
+    private void updateBuffer(int mthdIdx, Logger logger, Map mdc, int level, String msgOrFormat, Object... arg5) {
+        synchronized (getCircularList()) {
+            Object[] current = getBufferEntry();
+            current[MTHD_IDX] = Integer.valueOf(mthdIdx);
+            current[THIS_IDX] = logger;
+            current[MDC_IDX] = mdc;
+            current[LVL_IDX] = Integer.valueOf(level);
+            current[4] = msgOrFormat;
+            current[5] = arg5;
+            handleFlushSignal(mdc, msgOrFormat, level, arg5);
+        }
+    }
+
     public static void setBufferFlushSignal(Pattern signal) {
         bufferFlushSignal = signal;
     }
@@ -530,16 +537,21 @@ public class Logger implements org.slf4j.Logger {
     public void trace(Marker marker, String format, Object arg1, Object arg2) {
         delegate.trace(marker, format, arg1, arg2);
     }
-    private void updateBuffer(int mthdIdx, Logger logger, Map mdc, int level, String msgOrFormat, Object... arg5) {
-        synchronized (getCircularList()) {
-            Object[] current = getBufferEntry();
-            current[MTHD_IDX] = Integer.valueOf(mthdIdx);
-            current[THIS_IDX] = logger;
-            current[MDC_IDX] = mdc;
-            current[LVL_IDX] = Integer.valueOf(level);
-            current[4] = msgOrFormat;
-            current[5] = arg5;
-            handleFlushSignal(mdc, msgOrFormat, arg5);
+
+    public void handleFlushSignal(Map currentMDC, String format, int level, Object... args) {
+        boolean doFlush = (minFlushTriggerLevel <= level)
+                || (bufferFlushSignal != null
+                     && format != null
+                     && bufferFlushSignal.matcher(args != null
+                            && args.length > 0 ? MessageFormatter.arrayFormat(format, args).getMessage() : format).find());
+
+        if (doFlush) {
+            dispatchLog1(TRIGGERD_OUT_LOG_LEVEL, "Perform triggeredLog", false);
+            RollingArray.traverse(e -> performTriggeredLog(currentMDC, e), bufferedLogs.toArray());
+            //Reapply mdc to current thread
+            MDC.setContextMap(currentMDC);
+            bufferedLogs.makeEmpty();
+            dispatchLog1(TRIGGERD_OUT_LOG_LEVEL, "Perform triggeredLog end", false);
         }
     }
     private void dispatchLog1(int level, String msg, boolean useBuffer) {
