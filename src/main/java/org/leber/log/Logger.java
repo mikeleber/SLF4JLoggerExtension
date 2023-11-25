@@ -40,7 +40,7 @@ public class Logger implements org.slf4j.Logger {
     public static Pattern logFilter;
     public static String logFilterString;
     public static Pattern bufferFlushSignal;
-    public static int minFlushTriggerLevel;
+    public static int minFlushTriggerLevel = -1;
     public static String bufferFlushSignalString;
     public static String mdcEntryBufferFilter;
     public static int maxBufferOutLevel = I_LEVEL_PERFORMANCE;
@@ -539,7 +539,7 @@ public class Logger implements org.slf4j.Logger {
     }
 
     public void handleFlushSignal(Map currentMDC, String format, int level, Object... args) {
-        boolean doFlush = (minFlushTriggerLevel <= level)
+        boolean doFlush = (minFlushTriggerLevel != -1 && minFlushTriggerLevel <= level)
                 || (bufferFlushSignal != null
                      && format != null
                      && bufferFlushSignal.matcher(args != null
