@@ -32,6 +32,14 @@ public class LoggerManager implements LoggerManagerMBean {
     @Override
     public void setFilter(String filter)  {
         Logger.setLogFilter(filter);
+    } @Override
+    public String getClassFilter()  {
+        return Logger.getClassFilter();
+    }
+
+    @Override
+    public void setClassFilter(String filter)  {
+        Logger.setClassFilter(filter);
     }
 
     @Override

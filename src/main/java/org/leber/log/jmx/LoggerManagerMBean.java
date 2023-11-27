@@ -49,6 +49,9 @@ public interface LoggerManagerMBean {
     void setLevelMapping(String mapping) throws IOException;
 
     String getFilter() throws IOException;
+    String getClassFilter() throws IOException;
 
     void setFilter(String filter) throws IOException;
+    void setClassFilter(String filter) throws IOException;
+
 }

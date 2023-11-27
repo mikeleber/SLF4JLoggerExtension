@@ -39,6 +39,7 @@ public class Logger implements org.slf4j.Logger {
     public static int BUFFER_CAPACITY = 20;
     public static Pattern logFilter;
     public static String logFilterString;
+    public static String classFilter;
     public static Pattern bufferFlushSignal;
     public static int minFlushTriggerLevel = -1;
     public static String bufferFlushSignalString;
@@ -273,15 +274,19 @@ public class Logger implements org.slf4j.Logger {
         return myList.stream().anyMatch(s -> s.equalsIgnoreCase(stringToFind));
     }
 
-    private static boolean matchFilter(String format, Object... args) {
-        if (format != null && logFilter != null) {
+    private  boolean matchFilter(String format, Object... args) {
+        boolean matchClassFilter=matchClassFilter();
+        if (matchClassFilter && format != null && logFilter != null) {
             if (args != null && args.length > 0) {
                 format = MessageFormatter.arrayFormat(format, args).getMessage();
             }
             return logFilter.matcher(format).find();
         } else {
-            return true;
+            return matchClassFilter;
         }
+    }
+    private  boolean matchClassFilter() {
+       return getClassFilter()==null || delegate.getName().startsWith(getClassFilter());
     }
 
     public static int getMinFlushTriggerLevel() {
@@ -380,6 +385,15 @@ public class Logger implements org.slf4j.Logger {
     public static String getLogFilterString() {
         return logFilterString;
     }
+
+    public static String getClassFilter() {
+        return classFilter;
+    }
+
+    public static void setClassFilter(String classFilter) {
+        Logger.classFilter = classFilter;
+    }
+
     private static RollingArray<Object[]> getCircularList() {
         if (bufferedLogs == null) {
             bufferedLogs = new RollingArray<>(Object[].class, BUFFER_CAPACITY);
